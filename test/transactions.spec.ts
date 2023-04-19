@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process'
 import request from 'supertest'
 import { app } from '../src/app'
 
-describe('Transactions routes', () => {
+describe('Task routes', () => {
   beforeAll(async () => {
     await app.ready()
   })
@@ -17,99 +17,62 @@ describe('Transactions routes', () => {
     execSync('npm run knex migrate:latest')
   })
 
-  test('user can create a new transaction', async () => {
+  test('user can create a new task', async () => {
     await request(app.server)
-      .post('/transactions')
+      .post('/tasks')
       .send({
-        title: 'New transaction',
-        amount: '5000',
-        type: 'credit',
+        description: 'New description',
+        priority: 'high',
       })
       .expect(201)
   })
 
-  test('user can list all transactions', async () => {
-    const createTransactionResponse = await request(app.server)
-      .post('/transactions')
-      .send({
-        title: 'New transaction',
-        amount: '5000',
-        type: 'credit',
-      })
+  test('user can list all tasks', async () => {
+    const createTaskResponse = await request(app.server).post('/tasks').send({
+      description: 'New description',
+      priority: 'high',
+    })
 
-    const cookies = createTransactionResponse.get('Set-Cookie')
+    const cookies = createTaskResponse.get('Set-Cookie')
 
-    const listTransactionsResponse = await request(app.server)
-      .get('/transactions')
+    const listTasksResponse = await request(app.server)
+      .get('/tasks')
       .set('Cookie', cookies)
       .expect(200)
 
-    expect(listTransactionsResponse.body.transactions).toEqual([
+    expect(listTasksResponse.body.transactions).toEqual([
       expect.objectContaining({
-        title: 'New transaction',
-        amount: '5000',
+        description: 'New description',
+        priority: 'high',
       }),
     ])
   })
 
-  test('user can get a specific transactions', async () => {
-    const createTransactionResponse = await request(app.server)
-      .post('/transactions')
-      .send({
-        title: 'New transaction',
-        amount: '5000',
-        type: 'credit',
-      })
+  test('user can get a specific task', async () => {
+    const createTaskResponse = await request(app.server).post('/task').send({
+      description: 'New description',
+      priority: 'high',
+    })
 
-    const cookies = createTransactionResponse.get('Set-Cookie')
+    const cookies = createTaskResponse.get('Set-Cookie')
 
-    const listTransactionsResponse = await request(app.server)
-      .get('/transactions')
+    const listTasksResponse = await request(app.server)
+      .get('/tasks')
       .set('Cookie', cookies)
       .expect(200)
 
-    const transactionId = listTransactionsResponse.body.transactions[0].id
+    const taskId = listTasksResponse.body.transactions[0].id
 
-    const getTransactionResponse = await request(app.server)
-      .get(`/transactions/${transactionId}`)
+    const getTaskResponse = await request(app.server)
+      .get(`/tasks/${taskId}`)
       .set('Cookie', cookies)
       .expect(200)
 
-    expect(getTransactionResponse.body.transaction).toEqual(
+    expect(getTaskResponse.body.transaction).toEqual(
       expect.objectContaining({
-        title: 'New transaction',
-        amount: '5000',
+        description: 'New description',
+        priority: 'high',
       }),
     )
-  })
-
-  test('user can get the summary', async () => {
-    const createTransactionResponse = await request(app.server)
-      .post('/transactions')
-      .send({
-        title: 'Credit transaction',
-        amount: '5000',
-        type: 'credit',
-      })
-
-    const cookies = createTransactionResponse.get('Set-Cookie')
-
-    await request(app.server)
-      .post('/transactions')
-      .set('Cookie', cookies)
-      .send({
-        title: 'Debit transaction',
-        amount: '2000',
-        type: 'credit',
-      })
-
-    const summaryResponse = await request(app.server)
-      .get('transactions/summary')
-      .set('Cookie', cookies)
-      .expect(200)
-
-    expect(summaryResponse.body.summary).toEqual({
-      amount: 3000,
-    })
   })
 })
