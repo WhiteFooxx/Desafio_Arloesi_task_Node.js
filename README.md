@@ -1,13 +1,13 @@
-Requisitos Funcionais(RF)
-- [x] O usuário deve poder criar uma conta;
-- [x] O usuário deve poder obter um extrato da sua conta;
-- [x] O usuário deve poder listar todas transações que já ocorreram;
-- [x] O usuário deve poder visualizar uma transação única;
+Funcionalidades:
+- [x] Listar
+- [x] Adicionar
+- [ ] Editar
+- [x] Excluir
+- [ ] Marcar tarefa como finalizada
 
-Regras de Negócios(RN)
-- [x] A transação pode do tipo crédito que somará ao valor total, ou débito que será subtraído;
-- [ ] Deve ser possível identificar o usuário entre as requisições;
-- [ ] O usuário só pode visualizar transações que ele criou;
-
-Regras Não Funcionais(RNF)
-- [ ] Será criado ao longo da aplicação;
+Regras de negócio:
+- [x] Para adicionar uma nova tarefa, o usuário deverá informar a descrição e o nível de prioridade da tarefa
+- [x] Os possíveis níveis de prioridade são: Baixa, Média, Alta
+- [ ] Cada tarefa da listagem deverá conter a descrição, nível de prioridade, data de criação, se foi finalizado ou não e a data da finalização da tarefa (Caso tenha sido finalizada)
+- [ ] O usuário só poderá editar a descrição e o nível de prioridade da tarefa
+= [ ] Uma vez marcada como finalizada o usuário não poderá desmarcá-la
