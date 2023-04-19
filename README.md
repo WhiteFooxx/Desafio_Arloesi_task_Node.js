@@ -1,7 +1,7 @@
 Funcionalidades:
 - [x] Listar
 - [x] Adicionar
-- [ ] Editar
+- [x] Editar
 - [x] Excluir
 - [ ] Marcar tarefa como finalizada
 

@@ -78,7 +78,7 @@ export async function tasksRoutes(app: FastifyInstance) {
     {
       preHandler: [checkSessionIdExist],
     },
-    async (request) => {
+    async (request, reply) => {
       const getTaskParamsSchema = z.object({
         id: z.string().uuid(),
       })
@@ -87,14 +87,14 @@ export async function tasksRoutes(app: FastifyInstance) {
 
       const { sessionId } = request.cookies
 
-      const task = await knex('tasks')
+      await knex('tasks')
         .where({
           session_id: sessionId,
           id,
         })
         .delete()
 
-      return { task }
+      return reply.status(204).send()
     },
   )
 
@@ -103,6 +103,33 @@ export async function tasksRoutes(app: FastifyInstance) {
     {
       preHandler: [checkSessionIdExist],
     },
-    async (request) => {},
+    async (request, reply) => {
+      const getTaskParamsSchema = z.object({
+        id: z.string().uuid(),
+      })
+
+      const createTaskBodySchema = z.object({
+        description: z.string(),
+        priority: z.string(),
+      })
+
+      const { id } = getTaskParamsSchema.parse(request.params)
+
+      const { description, priority } = createTaskBodySchema.parse(request.body)
+
+      const { sessionId } = request.cookies
+
+      await knex('tasks')
+        .where({
+          session_id: sessionId,
+          id,
+        })
+        .update({
+          description,
+          priority,
+        })
+
+      return reply.status(204).send()
+    },
   )
 }
