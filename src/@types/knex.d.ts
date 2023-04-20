@@ -9,6 +9,8 @@ declare module 'knex/types/tables' {
       priority: string
       created_at: string
       session_id?: string
+      isDone: boolean
+      isDoneAt?: string
     }
   }
 }

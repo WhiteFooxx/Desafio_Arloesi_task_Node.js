@@ -6,6 +6,8 @@ export async function up(knex: Knex): Promise<void> {
     table.text('Description').notNullable()
     table.text('Priority').notNullable()
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()
+    table.boolean('isDone')
+    table.timestamp('isDoneAt')
   })
 }
 

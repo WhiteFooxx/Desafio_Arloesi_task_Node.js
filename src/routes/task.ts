@@ -48,11 +48,20 @@ export async function tasksRoutes(app: FastifyInstance) {
     const createTaskBodySchema = z.object({
       description: z.string(),
       priority: z.string(),
+      isDone: z.boolean(),
     })
 
-    const { description, priority } = createTaskBodySchema.parse(request.body)
+    const { description, priority, isDone } = createTaskBodySchema.parse(
+      request.body,
+    )
+
+    let time = ''
 
     let sessionId = request.cookies.sessionId
+
+    if (isDone === true) {
+      time = new Date().toLocaleDateString()
+    }
 
     if (!sessionId) {
       sessionId = randomUUID()
@@ -67,6 +76,8 @@ export async function tasksRoutes(app: FastifyInstance) {
       id: randomUUID(),
       description,
       priority,
+      isDone,
+      isDoneAt: time,
       session_id: sessionId,
     })
 
@@ -111,11 +122,14 @@ export async function tasksRoutes(app: FastifyInstance) {
       const createTaskBodySchema = z.object({
         description: z.string(),
         priority: z.string(),
+        isDone: z.boolean(),
       })
 
       const { id } = getTaskParamsSchema.parse(request.params)
 
-      const { description, priority } = createTaskBodySchema.parse(request.body)
+      const { description, priority, isDone } = createTaskBodySchema.parse(
+        request.body,
+      )
 
       const { sessionId } = request.cookies
 
@@ -128,6 +142,24 @@ export async function tasksRoutes(app: FastifyInstance) {
           description,
           priority,
         })
+
+      if (isDone === true) {
+        await knex('tasks')
+          .where({
+            session_id: sessionId,
+            id,
+          })
+          .update({ isDone: true, isDoneAt: new Date().toLocaleDateString() })
+      } else {
+        await knex('tasks')
+          .where({
+            session_id: sessionId,
+            id,
+          })
+          .update({
+            isDone: true,
+          })
+      }
 
       return reply.status(204).send()
     },
